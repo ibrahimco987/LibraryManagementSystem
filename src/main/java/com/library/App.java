@@ -1,5 +1,5 @@
 package com.library;
-
+import com.library.model.LibraryStatistics;
 import com.library.config.SupabaseClient;
 import com.library.service.AuthenticationService;
 import com.library.service.BookService;
@@ -72,7 +72,26 @@ public class App {
                         "New status: " +
                         service.getBookById(id).getStatus()
                 );
+                System.out.println("\nSearch Results:");
 
+for (Book book : service.searchBooks("Clean")) {
+    System.out.println(book.getTitle());
+}
+
+System.out.println("\nIssued Books:");
+
+for (Book book : service.filterBooks(BookStatus.ISSUED)) {
+    System.out.println(book.getTitle());
+}
+
+LibraryStatistics stats = service.getStatistics();
+
+System.out.println("\nLibrary Statistics:");
+
+System.out.println("Total: " + stats.getTotal());
+System.out.println("Available: " + stats.getAvailable());
+System.out.println("Issued: " + stats.getIssued());
+System.out.println("Reserved: " + stats.getReserved());
                 service.deleteBook(id);
 
                 System.out.println("Test book deleted successfully.");

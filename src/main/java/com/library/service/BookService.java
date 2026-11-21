@@ -1,5 +1,7 @@
 package com.library.service;
-
+import com.library.model.LibraryStatistics;
+import java.util.ArrayList;
+import java.util.Locale;
 import com.library.model.Book;
 import com.library.model.BookStatus;
 import com.library.repository.BookRepository;
@@ -9,6 +11,78 @@ import java.io.IOException;
 import java.util.List;
 
 public class BookService {
+    public LibraryStatistics getStatistics()
+        throws IOException, InterruptedException {
+
+    List<Book> books = getAllBooks();
+
+    int available = 0;
+    int issued = 0;
+    int reserved = 0;
+
+    for (Book book : books) {
+
+        switch (book.getStatus()) {
+
+            case AVAILABLE:
+                available++;
+                break;
+
+            case ISSUED:
+                issued++;
+                break;
+
+            case RESERVED:
+                reserved++;
+                break;
+        }
+    }
+
+    return new LibraryStatistics(
+            books.size(), available, issued, reserved
+    );
+}
+    public List<Book> filterBooks(BookStatus status)
+        throws IOException, InterruptedException {
+
+    InputValidator.validateStatus(status);
+
+    List<Book> books = getAllBooks();
+    List<Book> results = new ArrayList<>();
+
+    for (Book book : books) {
+
+        if (book.getStatus() == status) {
+            results.add(book);
+        }
+    }
+
+    return results;
+}
+    public List<Book> searchBooks(String keyword)
+        throws IOException, InterruptedException {
+
+    List<Book> books = getAllBooks();
+    List<Book> results = new ArrayList<>();
+
+    if (keyword == null || keyword.isBlank()) {
+        return books;
+    }
+
+    keyword = keyword.trim().toLowerCase(Locale.ROOT);
+
+    for (Book book : books) {
+
+        if (String.valueOf(book.getId()).equals(keyword)
+                || book.getTitle().toLowerCase(Locale.ROOT).contains(keyword)
+                || book.getAuthor().toLowerCase(Locale.ROOT).contains(keyword)) {
+
+            results.add(book);
+        }
+    }
+
+    return results;
+}
 
     private final BookRepository repository;
 
