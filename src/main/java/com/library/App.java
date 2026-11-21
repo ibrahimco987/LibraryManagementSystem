@@ -2,7 +2,10 @@ package com.library;
 
 import com.library.config.SupabaseClient;
 import com.library.service.AuthenticationService;
-import com.library.model.Librarian;
+import com.library.service.BookService;
+import com.library.repository.BookRepository;
+import com.library.model.Book;
+import com.library.model.BookStatus;
 
 import java.io.Console;
 
@@ -19,7 +22,7 @@ public class App {
             Console console = System.console();
 
             if (console == null) {
-                System.out.println("Run the application from a terminal.");
+                System.out.println("Run from a terminal.");
                 return;
             }
 
@@ -29,17 +32,54 @@ public class App {
                     console.readPassword("Enter password: ")
             );
 
-            Librarian librarian = auth.login(email, password);
+            auth.login(email, password);
 
-            System.out.println("Login successful!");
-            System.out.println("Welcome, " + librarian.getName());
+            try {
 
-            System.out.println("Logged in: " + auth.isLoggedIn());
+                BookRepository repository =
+                        new BookRepository(client, auth);
 
-            auth.logout();
+                BookService service =
+                        new BookService(repository);
 
-            System.out.println("Logout successful!");
-            System.out.println("Logged in: " + auth.isLoggedIn());
+                int id = Integer.parseInt(
+                        console.readLine("Enter an unused test book ID: ")
+                );
+
+                service.addBook(id, "Clean Code", "Robert Martin");
+
+                System.out.println("Book added successfully.");
+
+                for (Book book : service.getAllBooks()) {
+
+                    System.out.println(
+                            book.getId() + " | "
+                            + book.getTitle() + " | "
+                            + book.getAuthor() + " | "
+                            + book.getStatus()
+                    );
+                }
+
+                service.updateBook(
+                        id, "Clean Code - Updated", "Robert Martin"
+                );
+
+                System.out.println("Book updated successfully.");
+
+                service.changeStatus(id, BookStatus.ISSUED);
+
+                System.out.println(
+                        "New status: " +
+                        service.getBookById(id).getStatus()
+                );
+
+                service.deleteBook(id);
+
+                System.out.println("Test book deleted successfully.");
+
+            } finally {
+                auth.logout();
+            }
 
         } catch (Exception e) {
             System.out.println(e.getMessage());

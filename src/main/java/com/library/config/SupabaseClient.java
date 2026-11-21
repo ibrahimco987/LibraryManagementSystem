@@ -40,6 +40,11 @@ public class SupabaseClient {
                 .header("apikey", apiKey)
                 .header("Content-Type", "application/json");
 
+        if (path.startsWith("/rest/v1/")
+        && !method.equals("GET")) {
+
+    builder.header("Prefer", "return=representation");
+}        
         if (token != null && !token.isBlank()) {
             builder.header("Authorization", "Bearer " + token);
         }
