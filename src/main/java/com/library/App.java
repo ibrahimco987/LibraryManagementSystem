@@ -6,7 +6,8 @@ import com.library.service.BookService;
 import com.library.repository.BookRepository;
 import com.library.model.Book;
 import com.library.model.BookStatus;
-
+import com.library.service.ActivityLogService;
+import com.library.model.ActivityLog;
 import java.io.Console;
 
 public class App {
@@ -95,6 +96,20 @@ System.out.println("Reserved: " + stats.getReserved());
                 service.deleteBook(id);
 
                 System.out.println("Test book deleted successfully.");
+                ActivityLogService logService =
+        new ActivityLogService(client, auth);
+
+System.out.println("\nActivity History:");
+
+for (ActivityLog log : logService.getActivityLogs()) {
+
+    System.out.println(
+            log.getLibrarianName() + " | "
+            + log.getBookId() + " | "
+            + log.getAction() + " | "
+            + log.getCreatedAt()
+    );
+}
 
             } finally {
                 auth.logout();

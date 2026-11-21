@@ -29,6 +29,32 @@ public class SupabaseClient {
                 .connectTimeout(Duration.ofSeconds(10))
                 .build();
     }
+    private String getErrorMessage(int status) {
+
+    switch (status) {
+
+        case 400:
+            return "Invalid request or credentials.";
+
+        case 401:
+            return "Authentication failed. Please log in.";
+
+        case 403:
+            return "Access denied.";
+
+        case 404:
+            return "Requested resource not found.";
+
+        case 409:
+            return "Record conflict. Check for duplicate data.";
+
+        case 429:
+            return "Too many requests. Please try again later.";
+
+        default:
+            return "Supabase request failed. HTTP status: " + status;
+    }
+}
 
     public String request(String method, String path,
                           String body, String token)
@@ -63,13 +89,12 @@ public class SupabaseClient {
         );
 
         if (response.statusCode() < 200
-                || response.statusCode() >= 300) {
+        || response.statusCode() >= 300) {
 
-            throw new IOException(
-                "Supabase request failed. HTTP status: "
-                + response.statusCode()
-            );
-        }
+    throw new IOException(
+            getErrorMessage(response.statusCode())
+    );
+}
 
         return response.body();
     }
