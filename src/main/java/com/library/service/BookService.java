@@ -9,7 +9,13 @@ import com.library.util.InputValidator;
 
 import java.io.IOException;
 import java.util.List;
-
+/**
+ * Manages book operations including creation, retrieval,
+ * updating, deletion, searching and filtering.
+ *
+ * @author Ibrahim Muhammad Abbas
+ * @version 1.0
+ */
 public class BookService {
     public LibraryStatistics getStatistics()
         throws IOException, InterruptedException {
@@ -90,6 +96,17 @@ public class BookService {
         this.repository = repository;
     }
 
+    /**
+ * Adds a new book after validating its details.
+ *
+ * @param id unique book ID
+ * @param title title of the book
+ * @param author author of the book
+ * @return the newly created book
+ * @throws IllegalArgumentException if input is invalid or ID exists
+ * @throws IOException if communication with Supabase fails
+ * @throws InterruptedException if the request is interrupted
+ */
     public Book addBook(int id, String title, String author)
             throws IOException, InterruptedException {
 

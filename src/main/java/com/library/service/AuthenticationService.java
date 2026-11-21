@@ -8,6 +8,13 @@ import com.google.gson.JsonParser;
 
 import java.io.IOException;
 
+/**
+ * Handles librarian authentication, session management
+ * and access token renewal using Supabase Auth.
+ *
+ * @author Ibrahim Muhammad Abbas
+ * @version 1.0
+ */
 public class AuthenticationService {
 
     private final SupabaseClient client;
@@ -24,6 +31,18 @@ public class AuthenticationService {
         this.gson = new Gson();
     }
 
+    /**
+ * Authenticates a librarian using an email and password.
+ *
+ * @param email registered email address
+ * @param password librarian password
+ * @return the authenticated librarian profile
+ * @throws IOException if authentication or the request fails
+ * @throws InterruptedException if the request is interrupted
+ * @throws IllegalArgumentException if credentials are empty
+ * @throws IllegalStateException if the user is unauthorized
+ *         or already logged in
+ */
     public synchronized Librarian login(String email, String password)
             throws IOException, InterruptedException {
 
@@ -127,6 +146,13 @@ public class AuthenticationService {
         return accessToken;
     }
 
+    /**
+ * Terminates the current authentication session
+ * and clears local session information.
+ *
+ * @throws IOException if the logout request fails
+ * @throws InterruptedException if the request is interrupted
+ */
     public synchronized void logout()
             throws IOException, InterruptedException {
 
