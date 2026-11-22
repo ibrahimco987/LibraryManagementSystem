@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<BorderPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.library.ui.ShellController">
+ <left><VBox prefWidth="244" spacing="10" styleClass="sidebar">
+  <Label text="▤  LIBRARY DESK" styleClass="brand"/>
+  <Button fx:id="dashboard" text="◫  Dashboard" onAction="#dashboard" styleClass="nav" maxWidth="Infinity"/>
+  <Button fx:id="books" text="▤  Book Management" onAction="#books" styleClass="nav" maxWidth="Infinity"/>
+  <Button fx:id="activity" text="◷  Activity Logs" onAction="#activity" styleClass="nav" maxWidth="Infinity"/>
+  <Region VBox.vgrow="ALWAYS"/><Separator/>
+  <Label text="Signed in as" styleClass="brand-description"/><Label fx:id="librarian" styleClass="brand-description" wrapText="true"/>
+  <Button text="↪  Sign out" onAction="#signOut" styleClass="nav" maxWidth="Infinity"/>
+ </VBox></left>
+ <center><BorderPane>
+  <top><VBox spacing="6" styleClass="topbar"><Label text="Library Management System"/><Label text="University librarian portal" styleClass="muted"/></VBox></top>
+  <center><VBox spacing="25" styleClass="content">
+   <Label fx:id="heading" styleClass="heading"/>
+   <VBox spacing="16" styleClass="panel"><Label text="Workspace preview" styleClass="subheading"/><Label fx:id="description" wrapText="true" styleClass="muted"/><Label text="Phase 1 · Login and navigation are ready. Collection data is not loaded in this phase." wrapText="true" styleClass="muted"/></VBox>
+  </VBox></center>
+ </BorderPane></center>
+</BorderPane>

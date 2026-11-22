@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<GridPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.library.ui.LoginController" styleClass="login">
+ <columnConstraints><ColumnConstraints percentWidth="50"/><ColumnConstraints percentWidth="50"/></columnConstraints>
+ <rowConstraints><RowConstraints percentHeight="100"/></rowConstraints>
+ <VBox GridPane.columnIndex="0" alignment="CENTER_LEFT" spacing="28" styleClass="branding">
+  <Label text="▤  LIBRARY DESK" styleClass="brand"/>
+  <Label text="Every book, organized. Every task, simplified." wrapText="true" styleClass="hero"/>
+  <Label text="A clean workspace for librarians to manage books, track availability, and review library activity." wrapText="true" styleClass="brand-description"/>
+  <Label text="University Library Management System" styleClass="brand-description"/>
+ </VBox>
+ <VBox GridPane.columnIndex="1" alignment="CENTER" styleClass="form-container">
+  <VBox maxWidth="410" spacing="14">
+   <Label text="▤" styleClass="heading"/><Label text="Welcome back" styleClass="heading"/>
+   <Label text="Sign in to your librarian workspace." styleClass="muted"/>
+   <Label text="Email address" labelFor="$email"/><TextField fx:id="email" promptText="Enter your email"/>
+   <Label text="Password" labelFor="$password"/><PasswordField fx:id="password" promptText="Enter your password" onAction="#signIn"/>
+   <Button fx:id="submit" text="Sign in →" maxWidth="Infinity" defaultButton="true" onAction="#signIn" styleClass="primary"/>
+   <ProgressIndicator fx:id="progress" visible="false" managed="false" maxWidth="28" maxHeight="28"/>
+   <Label fx:id="error" wrapText="true" styleClass="error" minHeight="42"/>
+  </VBox>
+ </VBox>
+</GridPane>
