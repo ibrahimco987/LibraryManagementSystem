@@ -15,15 +15,9 @@ public class SupabaseClient {
 
     public SupabaseClient() {
 
-        url = System.getenv("SUPABASE_URL");
-        apiKey = System.getenv("SUPABASE_KEY");
-
-        if (url == null || apiKey == null
-                || url.isBlank() || apiKey.isBlank()) {
-            throw new IllegalStateException(
-                "Supabase configuration is missing."
-            );
-        }
+        AppConfig config = AppConfig.load();
+        url = config.url();
+        apiKey = config.key();
 
         client = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(10))
