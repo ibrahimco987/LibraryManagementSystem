@@ -12,6 +12,11 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Maps book operations to authenticated Supabase REST requests without duplicating service validation.
+ *
+ * @author Ibrahim Muhammad Abbas
+ */
 public class BookRepository {
 
     private final SupabaseClient client;
@@ -20,6 +25,11 @@ public class BookRepository {
 
     private static final String TABLE = "/rest/v1/books";
 
+    /**
+     * Connects book persistence to the configured client and librarian session.
+     * @param client configured Supabase HTTP client
+     * @param auth authentication service for the active librarian
+     */
     public BookRepository(SupabaseClient client,
                           AuthenticationService auth) {
 
@@ -28,6 +38,12 @@ public class BookRepository {
         this.gson = new Gson();
     }
 
+    /**
+     * Fetches all book rows ordered by ascending ID.
+     * @return the fetched books
+     * @throws IOException if the HTTP request fails or Supabase rejects it
+     * @throws InterruptedException if the request is interrupted
+     */
     public List<Book> findAll()
             throws IOException, InterruptedException {
 
@@ -43,6 +59,13 @@ public class BookRepository {
         return Arrays.asList(books);
     }
 
+    /**
+     * Fetches a book by its ID.
+     * @param id positive book ID
+     * @return the matching book, or null when no row is returned
+     * @throws IOException if the HTTP request fails or Supabase rejects it
+     * @throws InterruptedException if the request is interrupted
+     */
     public Book findById(int id)
             throws IOException, InterruptedException {
 
@@ -62,6 +85,13 @@ public class BookRepository {
         return books[0];
     }
 
+    /**
+     * Posts a book and requires an affected row in the response.
+     * @param book book to persist or display
+     * @return the persisted book
+     * @throws IOException if the HTTP request fails or Supabase rejects it
+     * @throws InterruptedException if the request is interrupted
+     */
     public Book add(Book book)
             throws IOException, InterruptedException {
 
@@ -75,6 +105,15 @@ public class BookRepository {
         return getAffectedBook(response);
     }
 
+    /**
+     * Patches the title and author and requires an affected row.
+     * @param id positive book ID
+     * @param title book title
+     * @param author book author
+     * @return the updated book
+     * @throws IOException if the HTTP request fails or Supabase rejects it
+     * @throws InterruptedException if the request is interrupted
+     */
     public Book update(int id, String title, String author)
             throws IOException, InterruptedException {
 
@@ -93,6 +132,14 @@ public class BookRepository {
         return getAffectedBook(response);
     }
 
+    /**
+     * Patches only the status and requires an affected row.
+     * @param id positive book ID
+     * @param status book status
+     * @return the updated book
+     * @throws IOException if the HTTP request fails or Supabase rejects it
+     * @throws InterruptedException if the request is interrupted
+     */
     public Book updateStatus(int id, BookStatus status)
             throws IOException, InterruptedException {
 
@@ -110,6 +157,12 @@ public class BookRepository {
         return getAffectedBook(response);
     }
 
+    /**
+     * Deletes the selected book and rejects a response with no affected row.
+     * @param id positive book ID
+     * @throws IOException if the HTTP request fails or Supabase rejects it
+     * @throws InterruptedException if the request is interrupted
+     */
     public void delete(int id)
             throws IOException, InterruptedException {
 
@@ -123,6 +176,11 @@ public class BookRepository {
         getAffectedBook(response);
     }
 
+    /**
+     * Parses a mutation response and rejects an empty result.
+     * @param response JSON response body
+     * @return the first affected book
+     */
     private Book getAffectedBook(String response) {
 
         Book[] books = gson.fromJson(response, Book[].class);

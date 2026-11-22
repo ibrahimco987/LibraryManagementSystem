@@ -26,6 +26,10 @@ public class AuthenticationService {
 
     private Librarian currentLibrarian;
 
+    /**
+     * Creates an initially signed-out authentication service for the configured client.
+     * @param client configured Supabase HTTP client
+     */
     public AuthenticationService(SupabaseClient client) {
         this.client = client;
         this.gson = new Gson();
@@ -102,6 +106,10 @@ public class AuthenticationService {
         return currentLibrarian;
     }
 
+    /**
+     * Stores access and refresh tokens and computes their expiry time in memory.
+     * @param data Supabase token response
+     */
     private void saveSession(JsonObject data) {
 
         accessToken = data.get("access_token").getAsString();
@@ -111,6 +119,13 @@ public class AuthenticationService {
                 + data.get("expires_in").getAsLong() * 1000;
     }
 
+    /**
+     * Returns the session token, refreshing it within 30 seconds of expiry. Refresh failures clear the local session.
+     * @return the current access token
+     * @throws IOException if the HTTP request fails or Supabase rejects it
+     * @throws InterruptedException if the request is interrupted
+     * @throws IllegalStateException if no librarian is logged in
+     */
     public synchronized String getAccessToken()
             throws IOException, InterruptedException {
 
@@ -171,6 +186,9 @@ public class AuthenticationService {
         }
     }
 
+    /**
+     * Clears tokens, expiry and the current librarian profile.
+     */
     private void clearSession() {
         accessToken = null;
         refreshToken = null;
@@ -178,10 +196,18 @@ public class AuthenticationService {
         currentLibrarian = null;
     }
 
+    /**
+     * Checks whether an authenticated librarian profile is held locally.
+     * @return true when a librarian profile is present
+     */
     public synchronized boolean isLoggedIn() {
         return currentLibrarian != null;
     }
 
+    /**
+     * Reads the current in-memory librarian profile.
+     * @return the current librarian, or null when signed out
+     */
     public synchronized Librarian getCurrentLibrarian() {
         return currentLibrarian;
     }

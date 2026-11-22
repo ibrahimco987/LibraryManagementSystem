@@ -8,12 +8,22 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Retrieves the latest database-generated activity events for an authenticated librarian.
+ *
+ * @author Ibrahim Muhammad Abbas
+ */
 public class ActivityLogService {
 
     private final SupabaseClient client;
     private final AuthenticationService auth;
     private final Gson gson;
 
+    /**
+     * Connects activity retrieval to the configured client and librarian session.
+     * @param client configured Supabase HTTP client
+     * @param auth authentication service for the active librarian
+     */
     public ActivityLogService(SupabaseClient client,
                               AuthenticationService auth) {
 
@@ -22,6 +32,12 @@ public class ActivityLogService {
         this.gson = new Gson();
     }
 
+    /**
+     * Fetches at most 100 recent activity events ordered by descending ID.
+     * @return the latest activity entries
+     * @throws IOException if the HTTP request fails or Supabase rejects it
+     * @throws InterruptedException if the request is interrupted
+     */
     public List<ActivityLog> getActivityLogs()
             throws IOException, InterruptedException {
 

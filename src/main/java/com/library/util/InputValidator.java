@@ -2,8 +2,21 @@ package com.library.util;
 
 import com.library.model.BookStatus;
 
+/**
+ * Checks book identifiers, required text fields and status values before service operations.
+ *
+ * @author Ibrahim Muhammad Abbas
+ */
 public class InputValidator {
+    /** Creates a validator object; validation entry points are static. */
+    public InputValidator() {}
 
+
+    /**
+     * Rejects identifiers that are zero or negative.
+     * @param id positive book ID
+     * @throws IllegalArgumentException if the supplied value is invalid
+     */
     public static void validateId(int id) {
 
         if (id <= 0) {
@@ -13,6 +26,12 @@ public class InputValidator {
         }
     }
 
+    /**
+     * Rejects null, empty or whitespace-only titles and authors.
+     * @param title book title
+     * @param author book author
+     * @throws IllegalArgumentException if the supplied value is invalid
+     */
     public static void validateDetails(String title, String author) {
 
         if (title == null || title.isBlank()) {
@@ -28,6 +47,11 @@ public class InputValidator {
         }
     }
 
+    /**
+     * Rejects a null status.
+     * @param status book status
+     * @throws IllegalArgumentException if the supplied value is invalid
+     */
     public static void validateStatus(BookStatus status) {
 
         if (status == null) {

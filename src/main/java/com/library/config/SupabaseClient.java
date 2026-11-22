@@ -7,12 +7,20 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.io.IOException;
 
+/**
+ * Sends synchronous HTTP requests to Supabase with bounded timeouts and sanitized HTTP error messages.
+ *
+ * @author Ibrahim Muhammad Abbas and Maaz
+ */
 public class SupabaseClient {
 
     private final String url;
     private final String apiKey;
     private final HttpClient client;
 
+    /**
+     * Loads application configuration and creates an HTTP client with a ten-second connection timeout.
+     */
     public SupabaseClient() {
 
         AppConfig config = AppConfig.load();
@@ -23,6 +31,11 @@ public class SupabaseClient {
                 .connectTimeout(Duration.ofSeconds(10))
                 .build();
     }
+    /**
+     * Maps an HTTP status to a credential-safe error message.
+     * @param status book status
+     * @return the user-readable error description
+     */
     private String getErrorMessage(int status) {
 
     switch (status) {
@@ -50,6 +63,16 @@ public class SupabaseClient {
     }
 }
 
+    /**
+     * Sends a synchronous request with the client key and optional bearer token. Non-success HTTP responses become sanitized IOExceptions.
+     * @param method HTTP method
+     * @param path Supabase endpoint path including query parameters
+     * @param body JSON request body, or null
+     * @param token bearer token, or null for unauthenticated endpoints
+     * @return the successful response body
+     * @throws IOException if the HTTP request fails or Supabase rejects it
+     * @throws InterruptedException if the request is interrupted
+     */
     public String request(String method, String path,
                           String body, String token)
             throws IOException, InterruptedException {

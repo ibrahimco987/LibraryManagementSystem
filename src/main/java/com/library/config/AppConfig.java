@@ -4,20 +4,37 @@ import io.github.cdimascio.dotenv.Dotenv;
 import java.util.Map;
 import java.util.function.Function;
 
-/** Resolves configuration without exposing values in diagnostics. */
+/** Resolves configuration without exposing values in diagnostics.
+ * @author Maaz
+ */
 public final class AppConfig {
     private final String url;
     private final String key;
 
+    /**
+     * Creates a resolved configuration snapshot from the supplied setting sources.
+     * @param environment injected OS setting values
+     * @param dotenv injected file setting values or provider
+     */
     public AppConfig(Map<String, String> environment, Map<String, String> dotenv) {
         this(environment::get, dotenv::get);
     }
 
+    /**
+     * Creates a resolved configuration snapshot from the supplied setting sources.
+     * @param environment injected OS setting values
+     * @param dotenv injected file setting values or provider
+     */
     private AppConfig(Function<String, String> environment, Function<String, String> dotenv) {
         url = resolve("SUPABASE_URL", environment, dotenv);
         key = resolve("SUPABASE_KEY", environment, dotenv);
     }
 
+    /**
+     * Loads configuration lazily from OS settings and an optional working-directory .env file.
+     * @return the resolved application configuration
+     * @throws IllegalStateException if a required setting is unavailable or the file cannot be read
+     */
     public static AppConfig load() {
         // Lazily parse the file only when an OS setting needs a fallback.
         return new AppConfig(System::getenv, new Function<>() {
@@ -35,6 +52,14 @@ public final class AppConfig {
         });
     }
 
+    /**
+     * Resolves a nonblank OS value before consulting the dotenv provider.
+     * @param name required configuration setting name
+     * @param environment injected OS setting values
+     * @param dotenv injected file setting values or provider
+     * @return the trimmed setting
+     * @throws IllegalStateException if a required setting is unavailable or the file cannot be read
+     */
     private static String resolve(String name, Function<String, String> environment,
                                   Function<String, String> dotenv) {
         String value = environment.apply(name);
@@ -44,6 +69,14 @@ public final class AppConfig {
         return value.trim();
     }
 
+    /**
+     * Returns the resolved Supabase project URL.
+     * @return the trimmed project URL
+     */
     public String url() { return url; }
+    /**
+     * Returns the resolved client key for HTTP headers. Do not log this value.
+     * @return the trimmed publishable or anon client key
+     */
     public String key() { return key; }
 }

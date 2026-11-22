@@ -13,8 +13,13 @@ import javafx.scene.layout.*;
 import java.util.*;
 import java.util.concurrent.Callable;
 
-/** Shared collection state keeps dashboard and book management consistent. */
+/** Shared collection state keeps dashboard and book management consistent.
+ * @author Maaz
+ */
 public final class WorkspaceController {
+    /** Creates a controller for FXML loading. */
+    public WorkspaceController() {}
+
     @FXML private VBox root;
     @FXML private HBox stats;
     @FXML private HBox filters;
@@ -32,6 +37,11 @@ public final class WorkspaceController {
     private boolean dashboard;
     private boolean busy;
 
+    /**
+     * Connects the controller to its application and authenticated services.
+     * @param app application owning the session and executor
+     * @param auth authentication service for the active librarian
+     */
     void configure(LibraryFxApp app, AuthenticationService auth) {
         this.app = app; this.auth = auth;
         SupabaseClient client = new SupabaseClient();
@@ -60,17 +70,35 @@ public final class WorkspaceController {
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
         refresh();
     }
+    /**
+     * Creates a read-only text column using the supplied value formatter.
+     * @param title column heading
+     * @param value column value extractor
+     * @param width preferred column width in pixels
+     */
     private void column(String title, java.util.function.Function<Book,String> value, int width) {
         TableColumn<Book,String> col = new TableColumn<>(title); col.setPrefWidth(width);
         col.setCellValueFactory(c -> new ReadOnlyStringWrapper(value.apply(c.getValue()))); table.getColumns().add(col);
     }
+    /**
+     * Converts a status enum name to a readable label.
+     * @param s status to display
+     * @return the title-case status name
+     */
     private static String label(BookStatus s) { return s.name().substring(0,1) + s.name().substring(1).toLowerCase(Locale.ROOT); }
+    /**
+     * Switches between dashboard summary and filtered book-table presentation.
+     * @param dashboard true to show summary cards and recent books
+     */
     void show(boolean dashboard) {
         this.dashboard = dashboard;
         stats.setVisible(dashboard); stats.setManaged(dashboard);
         recentActivity.setVisible(dashboard); recentActivity.setManaged(dashboard);
         filters.setVisible(!dashboard); filters.setManaged(!dashboard); render();
     }
+    /**
+     * Rebuilds visible rows from the shared collection and current view selection.
+     */
     private void render() {
         List<Book> found;
         if (dashboard) found = collection.stream().sorted(Comparator.comparing(
@@ -80,8 +108,17 @@ public final class WorkspaceController {
         table.getItems().setAll(found);
         count.setText((dashboard ? "Recent books: " : "Showing ") + found.size() + " of " + collection.size());
     }
+    /**
+     * Clears search text and restores the all-status filter.
+     */
     @FXML private void reset() { search.clear(); status.setValue("All statuses"); }
+    /**
+     * Opens the Add New Book dialog.
+     */
     @FXML private void add() { form(null); }
+    /**
+     * Loads current server state asynchronously and ignores results from an obsolete session.
+     */
     @FXML private void refresh() {
         run(() -> {
             List<Book> books = service.getAllBooks();
@@ -105,7 +142,14 @@ public final class WorkspaceController {
             recentActivity.setText("Recent Activity\n\n" + snapshot.activity()); render();
         });
     }
+    /** Bundles separately fetched books, counts and activity preview for one UI update. */
     private record Snapshot(List<Book> books, LibraryStatistics stats, String activity) {}
+    /**
+     * Queues an operation and delivers its result only to the current session.
+     * @param <T> operation result type
+     * @param operation background service call
+     * @param success JavaFX-thread callback after a successful result
+     */
     private <T> void run(Callable<T> operation, java.util.function.Consumer<T> success) {
         if (busy || !app.current(auth)) return;
         busy = true; root.setDisable(true); message.setText("Working…");
@@ -126,6 +170,10 @@ public final class WorkspaceController {
                 "Request failed. Check your connection and permissions. Refresh before retrying a change; it may have reached the server.");
         }); app.execute(task);
     }
+    /**
+     * Shows an Add or Edit dialog and delegates accepted values to the service.
+     * @param book book to persist or display
+     */
     private void form(Book book) {
         if (book == null && busy) return;
         Dialog<ButtonType> dialog = new Dialog<>(); dialog.initOwner(root.getScene().getWindow());
@@ -146,12 +194,20 @@ public final class WorkspaceController {
         int number = Integer.parseInt(id.getText().trim()); String t = title.getText(), a = author.getText();
         run(() -> book == null ? service.addBook(number,t,a) : service.updateBook(number,t,a), result -> refresh());
     }
+    /**
+     * Shows a status-choice dialog and submits an accepted change through BookService.
+     * @param book book to persist or display
+     */
     private void changeStatus(Book book) {
         if (book == null) return;
         ChoiceDialog<BookStatus> dialog = new ChoiceDialog<>(book.getStatus(), BookStatus.values());
         dialog.initOwner(root.getScene().getWindow()); dialog.setTitle("Change book status"); dialog.setHeaderText(book.getTitle());
         dialog.showAndWait().filter(s -> s != book.getStatus()).ifPresent(s -> run(() -> service.changeStatus(book.getId(),s), result -> refresh()));
     }
+    /**
+     * Confirms deletion before submitting the selected book ID to BookService.
+     * @param book book to persist or display
+     */
     private void delete(Book book) {
         if (book == null) return;
         Alert dialog = new Alert(Alert.AlertType.CONFIRMATION, "Delete ‘" + book.getTitle() + "’? This cannot be undone.", ButtonType.CANCEL, ButtonType.OK);

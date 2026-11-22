@@ -10,8 +10,20 @@ import com.library.service.ActivityLogService;
 import com.library.model.ActivityLog;
 import java.io.Console;
 
+/**
+ * Runs the original interactive console harness against the configured Supabase project. The harness creates, modifies and deletes the supplied test book.
+ *
+ * @author Ibrahim Muhammad Abbas
+ */
 public class App {
+    /** Creates the original console demonstration harness. */
+    public App() {}
 
+
+    /**
+     * Runs the console CRUD demonstration using an unused test book ID.
+     * @param args command-line arguments
+     */
     public static void main(String[] args) {
 
         try {

@@ -7,7 +7,15 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import java.util.Set;
 
+/**
+ * Collects librarian credentials and performs authentication on a background worker.
+ *
+ * @author Maaz
+ */
 public final class LoginController {
+    /** Creates a controller for FXML loading. */
+    public LoginController() {}
+
     @FXML private TextField email;
     @FXML private PasswordField password;
     @FXML private Button submit;
@@ -15,8 +23,16 @@ public final class LoginController {
     @FXML private Label error;
     private LibraryFxApp app;
 
+    /**
+     * Attaches the application and initial login notice.
+     * @param app application owning the session and executor
+     * @param message user-facing login notice
+     */
     void configure(LibraryFxApp app, String message) { this.app = app; error.setText(message); }
 
+    /**
+     * Validates required fields, clears the password control and starts background authentication.
+     */
     @FXML private void signIn() {
         if (submit.isDisabled()) return;
         String address = email.getText().trim();
@@ -46,11 +62,20 @@ public final class LoginController {
         app.execute(task);
     }
 
+    /**
+     * Updates controls to reflect an in-progress operation.
+     * @param busy whether an operation is running
+     */
     private void busy(boolean busy) {
         submit.setDisable(busy); email.setDisable(busy); password.setDisable(busy);
         progress.setVisible(busy); progress.setManaged(busy);
     }
 
+    /**
+     * Maps failures to allowlisted user messages without displaying arbitrary exception details.
+     * @param failure request failure to inspect
+     * @return a safe message suitable for the login screen
+     */
     private String safeError(Throwable failure) {
         String message = failure.getMessage();
         if (message != null && (message.startsWith("Missing SUPABASE_") || message.startsWith("Cannot read .env.")))
