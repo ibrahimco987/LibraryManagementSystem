@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?><?import javafx.scene.layout.*?>
+<VBox spacing="16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.library.ui.ActivityController">
+ <HBox spacing="12"><Button fx:id="refresh" text="Refresh" onAction="#refresh"/><ProgressIndicator fx:id="progress" visible="false" managed="false" maxWidth="26" maxHeight="26"/></HBox>
+ <Label fx:id="message" wrapText="true" styleClass="muted"/>
+ <TableView fx:id="table" editable="false" VBox.vgrow="ALWAYS"/>
+</VBox>

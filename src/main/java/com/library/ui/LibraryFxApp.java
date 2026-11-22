@@ -18,8 +18,8 @@ public final class LibraryFxApp extends Application {
         return thread;
     });
     private Stage stage;
-    private AuthenticationService session;
-    private boolean stopped;
+    private volatile AuthenticationService session;
+    private volatile boolean stopped;
 
     @Override public void start(Stage stage) throws IOException {
         this.stage = stage;
@@ -50,8 +50,8 @@ public final class LibraryFxApp extends Application {
         if (stopped) return;
         FXMLLoader loader = new FXMLLoader(getClass().getResource("shell.fxml"));
         Parent root = loader.load();
-        ((ShellController) loader.getController()).configure(this, auth.getCurrentLibrarian().getName());
         session = auth;
+        ((ShellController) loader.getController()).configure(this, auth);
         display(root);
     }
 
@@ -62,6 +62,19 @@ public final class LibraryFxApp extends Application {
             try { if (old != null) old.logout(); }
             catch (Exception ignored) { /* Backend clears local session in finally. */ }
         });
+    }
+
+    boolean current(AuthenticationService auth) { return !stopped && session == auth; }
+
+    boolean expired(AuthenticationService auth, Throwable failure) {
+        String message = failure.getMessage();
+        if (!auth.isLoggedIn() || "Authentication failed. Please log in.".equals(message)
+                || "Please log in first.".equals(message)) {
+            try { signOut(); showLogin("Your session expired. Please sign in again."); }
+            catch (IOException ignored) { stage.close(); }
+            return true;
+        }
+        return false;
     }
 
     void execute(Runnable task) { executor.execute(task); }

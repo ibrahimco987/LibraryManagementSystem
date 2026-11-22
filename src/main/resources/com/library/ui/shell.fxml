@@ -15,7 +15,8 @@
   <top><VBox spacing="6" styleClass="topbar"><Label text="Library Management System"/><Label text="University librarian portal" styleClass="muted"/></VBox></top>
   <center><VBox spacing="25" styleClass="content">
    <Label fx:id="heading" styleClass="heading"/>
-   <VBox spacing="16" styleClass="panel"><Label text="Workspace preview" styleClass="subheading"/><Label fx:id="description" wrapText="true" styleClass="muted"/><Label text="Phase 1 · Login and navigation are ready. Collection data is not loaded in this phase." wrapText="true" styleClass="muted"/></VBox>
+   <Label fx:id="description" wrapText="true" styleClass="muted"/>
+   <StackPane fx:id="workspace" VBox.vgrow="ALWAYS"/>
   </VBox></center>
  </BorderPane></center>
 </BorderPane>

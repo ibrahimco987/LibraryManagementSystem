@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?><?import javafx.scene.layout.*?>
+<VBox fx:id="root" spacing="16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.library.ui.WorkspaceController">
+ <HBox spacing="12"><Button text="+ Add New Book" onAction="#add" styleClass="primary"/><Button text="Refresh" onAction="#refresh"/><Label fx:id="message" wrapText="true"/></HBox>
+ <HBox fx:id="stats" spacing="12"/>
+ <HBox fx:id="filters" spacing="12"><TextField fx:id="search" promptText="Search by ID, title or author…" HBox.hgrow="ALWAYS"/><ComboBox fx:id="status"/><Button text="Reset" onAction="#reset"/></HBox>
+ <TableView fx:id="table" VBox.vgrow="ALWAYS" prefHeight="280"/>
+ <Label fx:id="count" styleClass="muted"/>
+ <Label fx:id="recentActivity" wrapText="true" styleClass="panel" maxWidth="Infinity"/>
+</VBox>
